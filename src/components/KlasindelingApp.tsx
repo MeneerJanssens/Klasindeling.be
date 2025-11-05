@@ -144,7 +144,7 @@ export default function KlasindelingApp() {
       rijen: rijen,
       kolommen: kolommen,
       geblokkeerd: Array.from(geblokkeerd),
-      klasNaam: klasNaam
+      klasNaam: opslaanNaam // Use the same name for consistency
     };
 
     const bijgewerkt = [...opgeslagenKlassen.filter(k => k.naam !== opslaanNaam), nieuweKlas];
@@ -162,7 +162,7 @@ export default function KlasindelingApp() {
       setRijen(klas.rijen);
       setKolommen(klas.kolommen);
       setGeblokkeerd(new Set(klas.geblokkeerd));
-      setKlasNaam(klas.klasNaam);
+      setKlasNaam(klas.naam); // Update klasNaam with the selected class name
       setToonResultaat(false);
       setIndeling([]);
     }
