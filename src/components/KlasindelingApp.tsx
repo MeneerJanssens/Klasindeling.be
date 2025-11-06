@@ -190,7 +190,7 @@ export default function KlasindelingApp() {
           <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <FolderOpen className="w-5 h-5" />
-              Opgeslagen Klassen
+              Opgeslagen klassen
             </h2>
             
             <div className="grid md:grid-cols-2 gap-4">
@@ -273,7 +273,7 @@ export default function KlasindelingApp() {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <Grid3x3 className="w-5 h-5" />
-                Klas Indeling
+                Klasindeling
               </h2>
               
               <div className="space-y-4">
@@ -326,7 +326,7 @@ export default function KlasindelingApp() {
                 className="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition"
               >
                 <Shuffle className="w-5 h-5" />
-                Genereer Willekeurige Indeling
+                Genereer willekeurige indeling
               </button>
             </div>
           </div>
