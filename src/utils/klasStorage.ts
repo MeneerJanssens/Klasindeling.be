@@ -5,6 +5,7 @@ export interface Leerling {
   naam: string;
   geslacht: 'm' | 'v';
   lastig: boolean;
+  vooraan: boolean;
 }
 
 export interface OpgeslagenKlas {

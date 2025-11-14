@@ -54,9 +54,10 @@ export default function KlasindelingApp() {
       return;
     }
 
-    // Verdeel leerlingen: lastige en normale
-    const lastigeLeerlingen = [...leerlingen.filter(l => l.lastig)].sort(() => Math.random() - 0.5);
-    const normaleLeerlingen = [...leerlingen.filter(l => !l.lastig)].sort(() => Math.random() - 0.5);
+    // Verdeel leerlingen: vooraan, lastige en normale
+    const vooraanLeerlingen = [...leerlingen.filter(l => l.vooraan)].sort(() => Math.random() - 0.5);
+    const lastigeLeerlingen = [...leerlingen.filter(l => l.lastig && !l.vooraan)].sort(() => Math.random() - 0.5);
+    const normaleLeerlingen = [...leerlingen.filter(l => !l.lastig && !l.vooraan)].sort(() => Math.random() - 0.5);
     
     // Maak een lege grid
     const nieuweIndeling: (Leerling | null)[][] = [];
@@ -105,13 +106,50 @@ export default function KlasindelingApp() {
       alert('Waarschuwing: Niet alle lastige leerlingen kunnen worden verspreid zonder naast elkaar te zitten. Probeer opnieuw of pas de klasindeling aan.');
     }
 
-    // Plaats normale leerlingen op overige plekken (van onderen naar boven)
+    // Plaats eerst vooraan-leerlingen willekeurig over de onderste rij
+    let vooraanIndex = 0;
+    const ondersteRij = rijen - 1;
+    
+    // Verzamel beschikbare posities op de onderste rij
+    const beschikbareOndersteRij: number[] = [];
+    for (let k = 0; k < kolommen; k++) {
+      if (nieuweIndeling[ondersteRij][k] === undefined) {
+        beschikbareOndersteRij.push(k);
+      }
+    }
+    
+    // Shuffle de beschikbare posities op de onderste rij
+    beschikbareOndersteRij.sort(() => Math.random() - 0.5);
+    
+    // Plaats vooraan-leerlingen op willekeurige posities in de onderste rij
+    for (const kolomIndex of beschikbareOndersteRij) {
+      if (vooraanIndex < vooraanLeerlingen.length) {
+        nieuweIndeling[ondersteRij][kolomIndex] = vooraanLeerlingen[vooraanIndex];
+        vooraanIndex++;
+      }
+    }
+    
+    // Als er nog vooraan-leerlingen over zijn, plaats ze in de volgende rijen
+    for (let r = rijen - 2; r >= 0 && vooraanIndex < vooraanLeerlingen.length; r--) {
+      for (let k = 0; k < kolommen && vooraanIndex < vooraanLeerlingen.length; k++) {
+        if (nieuweIndeling[r][k] === undefined) {
+          nieuweIndeling[r][k] = vooraanLeerlingen[vooraanIndex];
+          vooraanIndex++;
+        }
+      }
+    }
+
+    // Plaats normale leerlingen op overige plekken (van onderen naar boven, van links naar rechts)
     let normaleIndex = 0;
-    for (let r = rijen - 1; r >= 0; r--) { // Start onderaan (bij het bord)
+    for (let r = rijen - 1; r >= 0; r--) {
       for (let k = 0; k < kolommen; k++) {
         if (nieuweIndeling[r][k] === undefined) {
-          nieuweIndeling[r][k] = normaleLeerlingen[normaleIndex] || null;
-          if (normaleLeerlingen[normaleIndex]) normaleIndex++;
+          if (normaleIndex < normaleLeerlingen.length) {
+            nieuweIndeling[r][k] = normaleLeerlingen[normaleIndex];
+            normaleIndex++;
+          } else {
+            nieuweIndeling[r][k] = null;
+          }
         }
       }
     }
@@ -309,8 +347,7 @@ export default function KlasindelingApp() {
               Kies lege ruimtes (klik op vakjes om te blokkeren/deblokkeren)
             </h3>
             <div className="grid gap-2 max-w-4xl mx-auto" style={{ gridTemplateColumns: `repeat(${kolommen}, 1fr)` }}>
-              {Array.from({ length: rijen }).map((_, index) => {
-                const rijIndex = rijen - 1 - index;
+              {Array.from({ length: rijen }).map((_, rijIndex) => {
                 return Array.from({ length: kolommen }).map((_, kolomIndex) => {
                   const key = `${rijIndex}-${kolomIndex}`;
                   const isGeblokkeerd = geblokkeerd.has(key);
@@ -333,6 +370,9 @@ export default function KlasindelingApp() {
                   );
                 });
               })}
+            </div>
+            <div className="mt-4 text-center text-sm text-gray-600 font-medium">
+              Bord
             </div>
           </div>
 
@@ -400,6 +440,7 @@ export default function KlasindelingApp() {
                       const positieKey = `${rijIndex}-${kolomIndex}`;
                       const isGeblokkeerd = geblokkeerd.has(positieKey);
                       const isLastig = leerling?.lastig || false;
+                      const isVooraan = leerling?.vooraan || false;
                       return (
                         <div
                           key={`${rijIndex}-${kolomIndex}`}
@@ -411,7 +452,9 @@ export default function KlasindelingApp() {
                             isGeblokkeerd
                               ? 'bg-gray-200 border-gray-300 print:bg-white print:border-gray-300'
                               : leerling
-                              ? isLastig
+                              ? isVooraan
+                                ? 'bg-green-100 border-green-400 cursor-move hover:bg-green-200 print:cursor-default print:bg-white print:border-gray-700'
+                                : isLastig
                                 ? 'bg-orange-100 border-orange-300 cursor-move hover:bg-orange-200 print:cursor-default print:bg-white print:border-gray-700'
                                 : 'bg-indigo-50 border-indigo-300 cursor-move hover:bg-indigo-100 print:cursor-default print:bg-white print:border-gray-700'
                               : 'bg-gray-50 border-gray-200 print:bg-white print:border-gray-400'
@@ -425,6 +468,7 @@ export default function KlasindelingApp() {
                               </span>
                               <span className="text-xs mt-1 print:hidden">
                                 {leerling.geslacht === 'm' ? '♂️' : '♀️'}
+                                {isVooraan && ' ⭐'}
                                 {isLastig && ' ⚠️'}
                               </span>
                             </>

@@ -11,6 +11,7 @@ export default function LeerlingenInput({ leerlingen, setLeerlingen }: Leerlinge
   const [naam, setNaam] = useState('');
   const [geslacht, setGeslacht] = useState<'m' | 'v'>('m');
   const [lastig, setLastig] = useState(false);
+  const [vooraan, setVooraan] = useState(false);
   const [bulkTekst, setBulkTekst] = useState('');
   const [toonBulk, setToonBulk] = useState(false);
   const [bewerkLeerling, setBewerkLeerling] = useState<Leerling | null>(null);
@@ -21,10 +22,12 @@ export default function LeerlingenInput({ leerlingen, setLeerlingen }: Leerlinge
         id: Date.now(),
         naam: naam.trim(),
         geslacht,
-        lastig
+        lastig,
+        vooraan
       }]);
       setNaam('');
       setLastig(false);
+      setVooraan(false);
     }
   };
 
@@ -41,7 +44,8 @@ export default function LeerlingenInput({ leerlingen, setLeerlingen }: Leerlinge
       id: Date.now() + Math.random(),
       naam: regel.trim(),
       geslacht: 'm' as const,
-      lastig: false
+      lastig: false,
+      vooraan: false
     }));
     setLeerlingen([...leerlingen, ...nieuweLeerlingen]);
     setBulkTekst('');
@@ -120,17 +124,32 @@ export default function LeerlingenInput({ leerlingen, setLeerlingen }: Leerlinge
             </select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="lastig"
-              checked={lastig}
-              onChange={(e) => setLastig(e.target.checked)}
-              className="w-4 h-4 rounded focus:ring-indigo-500 accent-indigo-600"
-            />
-            <label htmlFor="lastig" className="text-sm font-medium text-gray-700">
-              Lastig
-            </label>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="lastig"
+                checked={lastig}
+                onChange={(e) => setLastig(e.target.checked)}
+                className="w-4 h-4 rounded focus:ring-indigo-500 accent-indigo-600"
+              />
+              <label htmlFor="lastig" className="text-sm font-medium text-gray-700">
+                Lastig
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="vooraan"
+                checked={vooraan}
+                onChange={(e) => setVooraan(e.target.checked)}
+                className="w-4 h-4 rounded focus:ring-indigo-500 accent-green-600"
+              />
+              <label htmlFor="vooraan" className="text-sm font-medium text-gray-700">
+                Vooraan
+              </label>
+            </div>
           </div>
 
           <button
@@ -161,7 +180,11 @@ export default function LeerlingenInput({ leerlingen, setLeerlingen }: Leerlinge
                 ) : (
                   <div
                     className={`px-3 py-2 rounded-lg flex items-center gap-2 cursor-pointer hover:shadow-md transition ${
-                      leerling.lastig ? 'bg-orange-100 border-2 border-orange-300' : 'bg-gray-100'
+                      leerling.vooraan
+                        ? 'bg-green-100 border-2 border-green-400'
+                        : leerling.lastig
+                        ? 'bg-orange-100 border-2 border-orange-300'
+                        : 'bg-gray-100'
                     }`}
                     onClick={() => setBewerkLeerling(leerling)}
                   >
@@ -170,6 +193,7 @@ export default function LeerlingenInput({ leerlingen, setLeerlingen }: Leerlinge
                       <span className="ml-1">
                         {leerling.geslacht === 'm' ? '♂️' : '♀️'}
                       </span>
+                      {leerling.vooraan && <span className="ml-1">⭐</span>}
                     </span>
                     <button
                       onClick={(e) => {
@@ -201,9 +225,10 @@ function BewerkLeerlingForm({ leerling, onOpslaan, onAnnuleer }: BewerkLeerlingF
   const [naam, setNaam] = useState(leerling.naam);
   const [geslacht, setGeslacht] = useState(leerling.geslacht);
   const [lastig, setLastig] = useState(leerling.lastig);
+  const [vooraan, setVooraan] = useState(leerling.vooraan);
 
   const handleOpslaan = () => {
-    onOpslaan(leerling.id, { naam, geslacht, lastig });
+    onOpslaan(leerling.id, { naam, geslacht, lastig, vooraan });
   };
 
   return (
@@ -232,6 +257,15 @@ function BewerkLeerlingForm({ leerling, onOpslaan, onAnnuleer }: BewerkLeerlingF
             className="w-4 h-4 rounded accent-indigo-600"
           />
           Lastige leerling
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={vooraan}
+            onChange={(e) => setVooraan(e.target.checked)}
+            className="w-4 h-4 rounded accent-green-600"
+          />
+          Vooraan plaatsen
         </label>
         <div className="flex gap-2">
           <button

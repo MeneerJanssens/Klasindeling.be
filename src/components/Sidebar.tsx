@@ -1,4 +1,4 @@
-import { Armchair, Info, Mail, Menu, X, Users as UsersIcon, Car, Droplets } from 'lucide-react';
+import { Armchair, Info, Mail, Menu, X, Users as UsersIcon, Car, Droplets, Clock, Shuffle } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -12,6 +12,8 @@ export default function Sidebar({ currentPage }: SidebarProps) {
   const menuItems = [
     { id: 'home', label: 'Klasindeling', icon: Armchair, path: '/klasindeling' },
     { id: 'groepjesmaker', label: 'Groepjesmaker', icon: UsersIcon, path: '/groepjesmaker' },
+    { id: 'timer', label: 'Timer', icon: Clock, path: '/timer' },
+    { id: 'namenkiezer', label: 'Namenkiezer', icon: Shuffle, path: '/namenkiezer' },
     { id: 'erb-simulator', label: 'EVRB Simulator', icon: Car, path: '/evrb-simulator' },
     { id: 'archimedes-simulator', label: 'Archimedeskracht Simulator', icon: Droplets, path: '/archimedeskracht-simulator' },
     { id: 'about', label: 'Over', icon: Info, path: '/over' },

@@ -6,6 +6,8 @@ import Contact from './pages/Contact';
 import Groepjesmaker from './pages/Groepjesmaker';
 import EVRBSimulator from './pages/EVRBSimulator';
 import ArchimedesSimulator from './pages/ArchimedesSimulator';
+import Timer from './pages/Timer';
+import Namenkiezer from './pages/Namenkiezer';
 
 function AppContent() {
   const location = useLocation();
@@ -17,6 +19,8 @@ function AppContent() {
     if (path === '/groepjesmaker') return 'groepjesmaker';
     if (path === '/evrb-simulator') return 'erb-simulator';
     if (path === '/archimedeskracht-simulator') return 'archimedes-simulator';
+    if (path === '/timer') return 'timer';
+    if (path === '/namenkiezer') return 'namenkiezer';
     if (path === '/over') return 'about';
     if (path === '/contact') return 'contact';
     return 'home';
@@ -34,8 +38,10 @@ function AppContent() {
           <Route path="/groepjesmaker" element={<Groepjesmaker />} />
           <Route path="/evrb-simulator" element={<EVRBSimulator />} />
           <Route path="/archimedeskracht-simulator" element={<ArchimedesSimulator />} />
-          <Route path="/over" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
+            <Route path="/timer" element={<Timer />} />
+            <Route path="/namenkiezer" element={<Namenkiezer />} />
+            <Route path="/over" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
     </div>
