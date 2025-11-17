@@ -255,7 +255,7 @@ export default function Groepjesmaker() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-blue-100 p-8">
       <div className="max-w-6xl mx-auto">
       <div className="mb-8 text-center">
-        <div className="flex flex-row items-center justify-center gap-4 mb-2">
+        <div className="flex flex-col items-center justify-center gap-4 mb-2">
             <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
               <Users className="w-9 h-9 text-white" />
             </div>
