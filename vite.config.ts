@@ -41,36 +41,20 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Core React libs - keep together with recharts dependencies
-          if (id.includes('node_modules/react') || 
-              id.includes('node_modules/react-dom') ||
-              id.includes('node_modules/react-router') ||
-              id.includes('node_modules/scheduler')) {
-            return 'react-vendor';
-          }
-          // Chart library with its dependencies
-          if (id.includes('node_modules/recharts') ||
-              id.includes('node_modules/d3-') ||
-              id.includes('node_modules/@reduxjs/toolkit') ||
-              id.includes('node_modules/react-redux') ||
-              id.includes('node_modules/use-sync-external-store')) {
-            return 'chart-vendor';
-          }
-          // PDF libraries (already lazy loaded)
-          if (id.includes('node_modules/jspdf') || id.includes('node_modules/html2canvas')) {
-            return 'pdf-vendor';
-          }
-          // QR code library
-          if (id.includes('node_modules/qrcode')) {
-            return 'qr-vendor';
-          }
-          // DOMPurify
-          if (id.includes('node_modules/dompurify')) {
-            return 'purify';
-          }
-          // Lucide icons - separate chunk
-          if (id.includes('node_modules/lucide-react')) {
-            return 'icons-vendor';
+          // Bundle everything together to avoid module resolution issues
+          if (id.includes('node_modules')) {
+            // Group by major library
+            if (id.includes('recharts') || id.includes('d3-') || id.includes('victory')) {
+              return 'vendor-charts';
+            }
+            if (id.includes('jspdf') || id.includes('html2canvas') || id.includes('canvg') || id.includes('dompurify')) {
+              return 'vendor-pdf';
+            }
+            if (id.includes('qrcode')) {
+              return 'vendor-qr';
+            }
+            // Everything else including React in one vendor bundle
+            return 'vendor';
           }
         },
         compact: true,
