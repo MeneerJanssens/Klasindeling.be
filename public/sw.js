@@ -53,7 +53,7 @@ self.addEventListener('fetch', (event) => {
           });
           return response;
         })
-        .catch(() => caches.match(request))
+        .catch(() => caches.match(request).then((r) => r || caches.match('/index.html') || new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/html' }})))
     );
     return;
   }
@@ -62,7 +62,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(request)
       .then((cachedResponse) => {
-        if (cachedResponse) {
+          if (cachedResponse) {
           // Return cached version and update in background
           fetch(request).then((response) => {
             caches.open(CACHE_NAME).then((cache) => {
@@ -82,6 +82,9 @@ self.addEventListener('fetch', (event) => {
             });
           }
           return response;
+        }).catch(() => {
+          // Network request failed, attempt to return an offline fallback for known HTML routes
+          return caches.match(request).then((r) => r || caches.match('/index.html') || new Response('Offline', { status: 503 }));
         });
       })
   );

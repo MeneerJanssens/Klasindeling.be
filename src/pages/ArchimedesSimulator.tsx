@@ -580,14 +580,14 @@ export default function ArchimedesSimulator() {
     const fluidColor = fluidDensity > 1200 ? 'bg-purple-800' : fluidDensity > 1000 ? 'bg-blue-700' : 'bg-blue-500'; 
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-blue-100 p-8 font-sans">
+        <div className="min-h-screen bg-linear-to-br from-indigo-100 via-purple-50 to-blue-100 p-8 font-sans">
             <div className="max-w-4xl mx-auto">
                 <div className="mb-8 text-center">
                     <div className="flex flex-col items-center justify-center gap-4 mb-2">
-                        <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
+                        <div className="flex items-center justify-center w-16 h-16 bg-linear-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
                             <Droplets className="w-9 h-9 text-white" />
                         </div>
-                        <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
+                        <h1 className="text-4xl sm:text-5xl font-extrabold bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
                             Archimedeskracht Simulator
                         </h1>
                     </div>
@@ -719,7 +719,7 @@ export default function ArchimedesSimulator() {
 
             {/* Donatie sectie - onderaan */}
             <div className="mt-8 max-w-4xl mx-auto">
-                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white border border-indigo-500/20">
+                <div className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white border border-indigo-500/20">
                     <h2 className="text-xl font-bold mb-2 text-center">
                         ❤️ Steun dit project
                     </h2>

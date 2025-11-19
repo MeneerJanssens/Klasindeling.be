@@ -23,14 +23,14 @@ export default function QRCodeGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-blue-100 p-8">
+    <div className="min-h-screen bg-linear-to-br from-indigo-100 via-purple-50 to-blue-100 p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 text-center">
           <div className="flex flex-col items-center justify-center gap-4 mb-2">
-            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
+            <div className="flex items-center justify-center w-16 h-16 bg-linear-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
               <QrCode className="w-9 h-9 text-white" />
             </div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
+            <h1 className="text-4xl sm:text-5xl font-extrabold bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
               QR-Code Generator
             </h1>
           </div>
@@ -83,7 +83,7 @@ export default function QRCodeGenerator() {
             <div className="flex flex-col items-center gap-6">
               <div
                 ref={qrRef}
-                className="p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-4 border-indigo-200 rounded-2xl shadow-inner"
+                className="p-6 bg-linear-to-br from-indigo-50 to-purple-50 border-4 border-indigo-200 rounded-2xl shadow-inner"
               >
                 <QRCodeCanvas
                   value={url}
@@ -95,7 +95,7 @@ export default function QRCodeGenerator() {
 
               <button
                 onClick={downloadQRCode}
-                className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all transform hover:scale-105 font-semibold shadow-lg"
+                className="flex items-center gap-2 bg-linear-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all transform hover:scale-105 font-semibold shadow-lg"
               >
                 <Download className="w-5 h-5" />
                 Download als PNG
@@ -111,7 +111,7 @@ export default function QRCodeGenerator() {
         {!url && (
           <div className="bg-white rounded-2xl shadow-lg p-12">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full mb-6">
+              <div className="inline-flex items-center justify-center w-24 h-24 bg-linear-to-br from-indigo-100 to-purple-100 rounded-full mb-6">
                 <QrCode className="w-12 h-12 text-indigo-600" />
               </div>
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
@@ -126,7 +126,7 @@ export default function QRCodeGenerator() {
 
         {/* Donatie sectie */}
         <div className="mt-8">
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white border border-indigo-500/20">
+          <div className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white border border-indigo-500/20">
             <h2 className="text-xl font-bold mb-2 text-center">
               ❤️ Steun dit project
             </h2>

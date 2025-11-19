@@ -305,15 +305,15 @@ export default function Klasindeling() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-blue-100 p-8 print:bg-white print:p-0">
+    <div className="min-h-screen bg-linear-to-br from-indigo-100 via-purple-50 to-blue-100 p-8 print:bg-white print:p-0">
       <div className="max-w-6xl mx-auto print:max-w-none">
         <div className="print:hidden">
         <div className="mb-8 text-center">
           <div className="flex flex-col items-center justify-center gap-4 mb-2">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
+              <div className="flex items-center justify-center w-16 h-16 bg-linear-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
                 <Armchair className="w-9 h-9 text-white" />
               </div>
-              <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
+              <h1 className="text-4xl sm:text-5xl font-extrabold bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
                 Klasindeling
               </h1>
             </div>
@@ -517,7 +517,7 @@ export default function Klasindeling() {
                           onDragStart={(e) => handleDragStart(e, rijIndex, kolomIndex)}
                           onDragOver={handleDragOver}
                           onDrop={(e) => handleDrop(e, rijIndex, kolomIndex)}
-                          className={`border-2 rounded-2xl p-2 md:p-4 text-center min-h-[60px] md:min-h-[80px] min-w-[60px] md:min-w-0 flex flex-col items-center justify-center transition print:min-h-[70px] print:p-2 print:border text-xs md:text-base ${
+                          className={`border-2 rounded-2xl p-2 md:p-4 text-center min-h-[60px] md:min-h-20 min-w-[60px] md:min-w-0 flex flex-col items-center justify-center transition print:min-h-[70px] print:p-2 print:border text-xs md:text-base ${
                             isGeblokkeerd
                               ? 'bg-gray-200 border-gray-300 print:bg-white print:border-gray-300'
                               : leerling
@@ -532,7 +532,7 @@ export default function Klasindeling() {
                         >
                           {leerling ? (
                             <>
-                              <span className="font-medium print:text-base text-gray-800 print:text-black break-words">
+                              <span className="font-medium print:text-base text-gray-800 print:text-black break-word">
                                 {leerling.naam}
                               </span>
                               <span className="text-xs mt-1 print:hidden">
@@ -564,7 +564,7 @@ export default function Klasindeling() {
       {/* Donatie sectie - onderaan (alleen zichtbaar als klasindeling getoond wordt) */}
       {toonResultaat && (
         <div className="mt-8 max-w-6xl mx-auto print:hidden">
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white border border-indigo-500/20">
+          <div className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white border border-indigo-500/20">
             <h2 className="text-xl font-bold mb-2 text-center">
               ❤️ Steun dit project
             </h2>

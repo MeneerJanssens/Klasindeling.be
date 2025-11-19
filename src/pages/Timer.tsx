@@ -104,14 +104,14 @@ export default function Timer() {
   const isLowTime = percentageLeft <= 10 && percentageLeft > 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-blue-100 p-8">
+    <div className="min-h-screen bg-linear-to-br from-indigo-100 via-purple-50 to-blue-100 p-8">
       <div className="max-w-4xl mx-auto">
       <div className="mb-8 text-center">
         <div className="flex flex-col items-center justify-center gap-4 mb-2">
-            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
+            <div className="flex items-center justify-center w-16 h-16 bg-linear-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
               <Clock className="w-9 h-9 text-white" />
             </div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
+            <h1 className="text-4xl sm:text-5xl font-extrabold bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
               Klastimer
             </h1>
           </div>
@@ -263,7 +263,7 @@ export default function Timer() {
             </button>
           </div>
 
-          <div className="mt-6 p-4 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl">
+          <div className="mt-6 p-4 bg-linear-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl">
             <p className="text-sm text-gray-700 text-center">
               💡 <strong>Tip:</strong> Perfecte timer voor klasactiviteiten, toetsen, groepswerk en korte pauzes!
             </p>
@@ -279,7 +279,7 @@ export default function Timer() {
 
         {/* Donatie sectie */}
         <div className="mt-8">
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white border border-indigo-500/20">
+          <div className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white border border-indigo-500/20">
             <h3 className="text-xl font-bold mb-2 text-center">
               ❤️ Steun dit project
             </h3>

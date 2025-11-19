@@ -35,8 +35,10 @@ export default function Sidebar({ currentPage }: SidebarProps) {
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30 print:hidden"
+          className="lg:hidden fixed inset-0 bg-black/30 z-30 print:hidden transition-opacity duration-300"
           onClick={() => setIsOpen(false)}
+          role="presentation"
+          aria-hidden={isOpen ? 'false' : 'true'}
         />
       )}
 
@@ -44,7 +46,7 @@ export default function Sidebar({ currentPage }: SidebarProps) {
       <aside
         className={`
           fixed lg:sticky top-0 left-0 h-screen bg-white shadow-xl z-40
-          w-64 flex-shrink-0 transform transition-transform duration-300 ease-in-out
+          w-64 shrink-0 transform transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           print:hidden
         `}
@@ -74,7 +76,7 @@ export default function Sidebar({ currentPage }: SidebarProps) {
                     }
                   `}
                 >
-                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <Icon className="w-5 h-5 shrink-0" />
                   <span className="font-medium text-left">{item.label}</span>
                 </Link>
               );

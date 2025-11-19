@@ -1,11 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
+@import "tailwindcss";
 
 @layer base {
   html {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     overflow-y: scroll; /* Always show vertical scrollbar to prevent layout shift */
+    /* Prevent mobile browsers from auto-scaling text sizes; add unprefixed property for broader support */
+    text-size-adjust: 100%;
     font-display: swap; /* Improve font loading performance */
   }
 

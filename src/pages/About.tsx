@@ -2,14 +2,14 @@ import { Info } from 'lucide-react';
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-blue-100 p-8">
+    <div className="min-h-screen bg-linear-to-br from-indigo-100 via-purple-50 to-blue-100 p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 text-center">
           <div className="flex flex-col items-center justify-center gap-4 mb-2">
-            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
+            <div className="flex items-center justify-center w-16 h-16 bg-linear-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
               <Info className="w-9 h-9 text-white" />
             </div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
+            <h1 className="text-4xl sm:text-5xl font-extrabold bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
               Over
             </h1>
           </div>
@@ -30,7 +30,7 @@ export default function About() {
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <h3 className="text-lg font-semibold text-indigo-700 mb-2">
-                  📐 Klasindeling
+                  Klasindeling
                 </h3>
                 <p className="text-sm text-gray-600">
                   Genereer willekeurige zitindelingen, blokkeer plaatsen, voorkom dat drukke 
@@ -40,7 +40,7 @@ export default function About() {
 
               <div>
                 <h3 className="text-lg font-semibold text-indigo-700 mb-2">
-                  👥 Groepjesmaker
+                  Groepjesmaker
                 </h3>
                 <p className="text-sm text-gray-600">
                   Maak willekeurige groepen met automatische verdeling en geslacht balans. 
@@ -50,7 +50,7 @@ export default function About() {
 
               <div>
                 <h3 className="text-lg font-semibold text-indigo-700 mb-2">
-                  🎲 Namenkiezer
+                  Namenkiezer
                 </h3>
                 <p className="text-sm text-gray-600">
                   Kies willekeurig een naam uit je klas met een animatie. 
@@ -60,7 +60,7 @@ export default function About() {
 
               <div>
                 <h3 className="text-lg font-semibold text-indigo-700 mb-2">
-                  ⏱️ Timer
+                  Timer
                 </h3>
                 <p className="text-sm text-gray-600">
                   Eenvoudige klaslokaal timer met vooringestelde tijden en aangepaste intervallen. 
@@ -70,7 +70,7 @@ export default function About() {
 
               <div>
                 <h3 className="text-lg font-semibold text-indigo-700 mb-2">
-                  📱 QR-Code Generator
+                  QR-Code Generator
                 </h3>
                 <p className="text-sm text-gray-600">
                   Genereer QR-codes van elke URL met instelbare grootte en download als PNG. 
@@ -80,7 +80,7 @@ export default function About() {
 
               <div>
                 <h3 className="text-lg font-semibold text-indigo-700 mb-2">
-                  🚗 EVRB Simulator
+                  EVRB Simulator
                 </h3>
                 <p className="text-sm text-gray-600">
                   Simuleer eenparig versnelde rechtlijnige beweging met realtime animatie en interactieve 
@@ -90,7 +90,7 @@ export default function About() {
 
               <div>
                 <h3 className="text-lg font-semibold text-indigo-700 mb-2">
-                  💧 Archimedeskracht Simulator
+                  Archimedeskracht Simulator
                 </h3>
                 <p className="text-sm text-gray-600">
                   Demonstreer de wet van Archimedes met verschillende materialen en vloeistoffen. 

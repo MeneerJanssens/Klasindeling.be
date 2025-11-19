@@ -81,6 +81,15 @@ export default function Groepjesmaker() {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
     
+    const escapeHtml = (unsafe: string) => (
+      unsafe
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+    );
+
     const html = `
       <!DOCTYPE html>
       <html>
@@ -144,18 +153,18 @@ export default function Groepjesmaker() {
       <body>
         ${(klasNaam || extraTekst) ? `
           <h1 style="margin-bottom: 4px; padding-bottom: 4px;">
-            ${klasNaam || ''}${klasNaam && extraTekst ? ' - ' : ''}${extraTekst || ''}
+            ${escapeHtml(klasNaam || '')}${klasNaam && extraTekst ? ' - ' : ''}${escapeHtml(extraTekst || '')}
           </h1>
         ` : '<h1>Groepsindeling</h1>'}
         <div class="info">
           <p><strong>Datum:</strong> ${new Date().toLocaleDateString('nl-NL')}</p>
           <p><strong>Totaal aantal groepen:</strong> ${groepen.length}</p>
         </div>
-        ${groepen.map((groep, idx) => `
+          ${groepen.map((groep, idx) => `
           <div class="groep">
             <div class="groep-titel">Groep ${idx + 1} (${groep.length} leerlingen)</div>
             <div class="leerling-lijst">
-              ${groep.map(l => `<div class="leerling">• ${l.naam}</div>`).join('')}
+              ${groep.map(l => `<div class="leerling">• ${escapeHtml(l.naam)}</div>`).join('')}
             </div>
           </div>
         `).join('')}
@@ -252,14 +261,14 @@ export default function Groepjesmaker() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-blue-100 p-8">
+    <div className="min-h-screen bg-linear-to-br from-indigo-100 via-purple-50 to-blue-100 p-8">
       <div className="max-w-6xl mx-auto">
       <div className="mb-8 text-center">
         <div className="flex flex-col items-center justify-center gap-4 mb-2">
-            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
+            <div className="flex items-center justify-center w-16 h-16 bg-linear-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg transform hover:scale-110 transition-transform">
               <Users className="w-9 h-9 text-white" />
             </div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
+            <h1 className="text-4xl sm:text-5xl font-extrabold bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2">
               Groepjesmaker
             </h1>
           </div>
@@ -379,7 +388,7 @@ export default function Groepjesmaker() {
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => setBewerkMode(!bewerkMode)}
-                  className={`w-full sm:min-w-[160px] sm:w-auto px-4 py-2 rounded-2xl transition flex items-center justify-center gap-2 ${
+                  className={`w-full sm:min-w-40 sm:w-auto px-4 py-2 rounded-2xl transition flex items-center justify-center gap-2 ${
                     bewerkMode
                       ? 'bg-green-600 text-white hover:bg-green-700'
                       : 'bg-indigo-600 text-white hover:bg-indigo-700'
@@ -399,14 +408,14 @@ export default function Groepjesmaker() {
                 </button>
                 <button
                   onClick={handlePrint}
-                  className="w-full sm:min-w-[160px] sm:w-auto px-4 py-2 bg-green-600 text-white rounded-2xl hover:bg-green-700 transition flex items-center justify-center gap-2"
+                  className="w-full sm:min-w-40 sm:w-auto px-4 py-2 bg-green-600 text-white rounded-2xl hover:bg-green-700 transition flex items-center justify-center gap-2"
                 >
                   <Printer className="w-4 h-4" />
                   Print
                 </button>
                 <button
                   onClick={handleDownloadPDF}
-                  className="w-full sm:min-w-[160px] sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition flex items-center justify-center gap-2"
+                  className="w-full sm:min-w-40 sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition flex items-center justify-center gap-2"
                 >
                   <Download className="w-4 h-4" />
                   Download PDF
@@ -443,7 +452,7 @@ export default function Groepjesmaker() {
               {groepen.map((groep, groepIdx) => (
                 <div
                   key={groepIdx}
-                  className="border-2 border-gray-200 rounded-2xl p-4 bg-gradient-to-br from-white to-gray-50"
+                  className="border-2 border-gray-200 rounded-2xl p-4 bg-linear-to-br from-white to-gray-50"
                 >
                   <h3 className="font-bold text-lg text-indigo-600 mb-3">
                     Groep {groepIdx + 1} ({groep.length})
@@ -470,7 +479,7 @@ export default function Groepjesmaker() {
         {/* Donatie sectie - onderaan (alleen zichtbaar als groepen gemaakt zijn) */}
         {groepen.length > 0 && (
           <div className="mt-8">
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white border border-indigo-500/20">
+            <div className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-8 text-white border border-indigo-500/20">
               <h2 className="text-xl font-bold mb-2 text-center">
                 ❤️ Steun dit project
               </h2>
