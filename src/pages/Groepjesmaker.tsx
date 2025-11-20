@@ -213,28 +213,51 @@ export default function Groepjesmaker() {
     await new Promise((r) => setTimeout(r, 120));
 
     try {
-      // Import html2pdf.js locally (package is installed)
-      const html2pdfLib = await import('html2pdf.js');
+      // Load UMD bundle at runtime to avoid bundler/ESM issues that can break
+      // class inheritance (some builds pack jspdf/html2canvas differently).
+      await new Promise<void>((resolve, reject) => {
+        if ((window as any).html2pdf) return resolve();
+        const s = document.createElement('script');
+        s.src = 'https://unpkg.com/html2pdf.js/dist/html2pdf.bundle.min.js';
+        s.async = true;
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error('Failed to load html2pdf.js bundle'));
+        document.head.appendChild(s);
+      });
 
-      // Configure options for good visual fidelity
+      // @ts-ignore - html2pdf is provided by the UMD bundle on window
+      const html2pdf = (window as any).html2pdf;
+
       const opt = {
         margin: 10,
         filename: 'Groepsindeling-Meneer-Janssens.pdf',
-        image: { type: 'jpeg' as const, quality: 0.98 },
+        image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
           scale: 2,
           useCORS: true,
           allowTaint: false,
           scrollY: 0
         },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['css', 'legacy'] }
       };
 
-      // Generate and save PDF
-      await html2pdfLib.default(element, opt);
+      // Use the UMD API which is more stable across builds
+      await new Promise<void>((resolve, reject) => {
+        try {
+          const worker = html2pdf().set(opt).from(element).save();
+          if (worker && typeof worker.then === 'function') {
+            worker.then(() => resolve()).catch((err: any) => reject(err));
+          } else {
+            // Fallback: wait briefly for download to start
+            setTimeout(() => resolve(), 1000);
+          }
+        } catch (err) {
+          reject(err);
+        }
+      });
     } catch (error: any) {
-      console.error('Error generating PDF (html2pdf):', error);
+      console.error('Error generating PDF (html2pdf UMD):', error);
       alert('Er is een fout opgetreden bij het genereren van de PDF. Controleer de console voor details.');
     } finally {
       // Clean up
