@@ -19,6 +19,7 @@ export default function Klasindeling() {
   const [draggedItem, setDraggedItem] = useState<DraggedItem | null>(null);
   const [geblokkeerd, setGeblokkeerd] = useState<Set<string>>(new Set());
   const [klasNaam, setKlasNaam] = useState<string>('');
+  const [showColors, setShowColors] = useState<boolean>(true);
 
   const handleLaadKlas = (klas: OpgeslagenKlas) => {
     setLeerlingen(klas.leerlingen);
@@ -256,9 +257,6 @@ export default function Klasindeling() {
     if (!element) return;
 
     try {
-      // Dynamically import jsPDF only when needed
-      const { jsPDF } = await import('jspdf');
-
       // Add a class to force desktop styles
       element.classList.add('pdf-export');
       
@@ -280,8 +278,6 @@ export default function Klasindeling() {
           line-height: 1.5rem !important;
         }
         .pdf-export * {
-          background: white !important;
-          background-image: none !important;
           color: black !important;
           border-color: black !important;
         }
@@ -300,32 +296,112 @@ export default function Klasindeling() {
         .pdf-export .bg-gray-200 {
           background: #f3f4f6 !important;
         }
+        ${showColors ? `
+        .pdf-export .bg-green-100 {
+          background: #dcfce7 !important;
+        }
+        .pdf-export .border-green-400 {
+          border-color: #4ade80 !important;
+        }
+        .pdf-export .bg-orange-100 {
+          background: #ffedd5 !important;
+        }
+        .pdf-export .border-orange-300 {
+          border-color: #fdba74 !important;
+        }
+        .pdf-export .bg-indigo-50 {
+          background: #eef2ff !important;
+        }
+        .pdf-export .border-indigo-300 {
+          border-color: #a5b4fc !important;
+        }
+        .pdf-export .bg-gray-50 {
+          background: #f9fafb !important;
+        }
+        .pdf-export .border-gray-200 {
+          border-color: #e5e7eb !important;
+        }
+        .pdf-export .bg-red-100 {
+          background: #fee2e2 !important;
+        }
+        .pdf-export .border-red-400 {
+          border-color: #f87171 !important;
+        }
+        .pdf-export .bg-gray-200 {
+          background: #e5e7eb !important;
+        }
+        .pdf-export .border-gray-300 {
+          border-color: #d1d5db !important;
+        }
+        ` : `
+        .pdf-export .bg-green-100 {
+          background: #dcfce7 !important;
+        }
+        .pdf-export .border-green-400 {
+          border-color: #4ade80 !important;
+        }
+        .pdf-export .bg-orange-100 {
+          background: #ffedd5 !important;
+        }
+        .pdf-export .border-orange-300 {
+          border-color: #fdba74 !important;
+        }
+        .pdf-export .bg-indigo-50 {
+          background: #eef2ff !important;
+        }
+        .pdf-export .border-indigo-300 {
+          border-color: #a5b4fc !important;
+        }
+        .pdf-export .bg-gray-50 {
+          background: white !important;
+        }
+        .pdf-export .border-gray-200 {
+          border-color: #e5e7eb !important;
+        }
+        .pdf-export .bg-gray-200 {
+          background: #e5e7eb !important;
+        }
+        .pdf-export .border-gray-300 {
+          border-color: #d1d5db !important;
+        }
+        `}
+        .pdf-export span {
+          background: transparent !important;
+        }
       `;
       document.head.appendChild(style);
       
       // Wait for styles to apply
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: 'a4'
-      });
-
       const fileName = klasNaam 
         ? `Klasindeling-${klasNaam}.pdf` 
         : 'Klasindeling-Meneer-Janssens.pdf';
 
-      // Use jsPDF html method to directly convert HTML to PDF
-      await pdf.html(element, {
-        callback: function(pdf) {
-          pdf.save(fileName);
+      // Use html2pdf for all cases
+      const html2pdf = (await import('html2pdf.js')).default;
+
+      // Configure html2pdf options
+      const options = {
+        margin: 0.5,
+        filename: fileName,
+        image: { type: 'jpeg' as const, quality: 0.98 },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff'
         },
-        x: 0,
-        y: 0,
-        width: 297, // A4 landscape width
-        windowWidth: 1200
-      });
+        jsPDF: { 
+          unit: 'in' as const, 
+          format: 'a4' as const, 
+          orientation: 'landscape' as const,
+          compress: true
+        }
+      };
+
+      // Generate and download PDF
+      await html2pdf().set(options).from(element).save();
 
       // Remove temporary styles
       element.classList.remove('pdf-export');
@@ -482,18 +558,19 @@ export default function Klasindeling() {
             <div className="mt-4 text-center text-sm text-gray-600 font-medium">
               Bord
             </div>
-          </div>
 
-          <div className="max-w-md mx-auto mb-6 flex flex-col gap-4">
-            <div className="flex justify-center">
+            <div className="mt-4 flex justify-center">
               <button
                 onClick={handleSave}
-                className="w-1/2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-2xl flex items-center justify-center gap-2 transition"
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-2xl flex items-center justify-center gap-2 transition"
               >
                 <Save className="w-5 h-5" />
                 Opslaan
               </button>
             </div>
+          </div>
+
+          <div className="max-w-md mx-auto mb-6 flex flex-col gap-4">
             <button
               onClick={genereerIndeling}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-2xl flex items-center justify-center gap-2 transition"
@@ -503,19 +580,112 @@ export default function Klasindeling() {
             </button>
           </div>
 
-          {toonResultaat && (
-            <div className="text-center mb-6 space-y-3">
-              <div className="max-w-md mx-auto mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Klas naam (optioneel):
+        </div>
+
+        {/* Resultaat - zichtbaar op scherm en bij printen */}
+        {toonResultaat && (
+          <>
+            <div className="text-center mb-6">
+              <div className="max-w-md mx-auto mb-4 flex items-center justify-between gap-4 print:hidden">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Klas naam (optioneel):
+                  </label>
+                  <input
+                    type="text"
+                    value={klasNaam}
+                    onChange={(e) => setKlasNaam(e.target.value)}
+                    placeholder="Bijv: 3A, 5de jaar, ..."
+                    className="w-full px-4 py-2 bg-white border-2 border-gray-300 rounded-2xl focus:border-indigo-500 focus:outline-none"
+                  />
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showColors}
+                    onChange={(e) => setShowColors(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                  <span className="ml-3 text-sm font-medium text-gray-700">Kleuren en emoji's tonen/verbergen</span>
                 </label>
-                <input
-                  type="text"
-                  value={klasNaam}
-                  onChange={(e) => setKlasNaam(e.target.value)}
-                  placeholder="Bijv: 3A, 5de jaar, ..."
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-2xl focus:border-indigo-500 focus:outline-none"
-                />
+              </div>
+            </div>
+
+            <div id="klasindeling-resultaat" className="bg-white rounded-2xl shadow-lg p-4 md:p-8 print:shadow-none print:p-0 print:rounded-none">
+              <h2 className="text-xl md:text-2xl font-bold text-center text-gray-800 mb-4 md:mb-6 print:mb-4 print:text-3xl">
+                Klasindeling - {klasNaam || 'via klasindeling.be'}
+              </h2>
+              
+              <div className="overflow-x-auto">
+                <div className="flex flex-col gap-1 md:gap-2 print:gap-3 min-w-min">
+                  {indeling.map((rij, rijIndex) => (
+                    <div key={rijIndex} className="flex gap-1 md:gap-2 print:gap-3">
+                      {rij.map((leerling, kolomIndex) => {
+                        const positieKey = `${rijIndex}-${kolomIndex}`;
+                        const isGeblokkeerd = geblokkeerd.has(positieKey);
+                        const isDruk = leerling?.druk || false;
+                        const isVooraan = leerling?.vooraan || false;
+                        return (
+                          <div
+                            key={`${rijIndex}-${kolomIndex}`}
+                            draggable={!isGeblokkeerd && leerling !== null}
+                            onDragStart={(e) => handleDragStart(e, rijIndex, kolomIndex)}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(e, rijIndex, kolomIndex)}
+                            className={`border-2 rounded-2xl p-2 md:p-4 text-center min-h-[60px] md:min-h-20 min-w-[60px] md:min-w-0 flex flex-col items-center justify-center transition print:min-h-[70px] print:p-2 print:border text-xs md:text-base ${
+                              isGeblokkeerd
+                                ? 'bg-gray-200 border-gray-300 print:bg-white print:border-gray-300'
+                                : leerling
+                                ? showColors && isVooraan
+                                  ? 'bg-green-100 border-green-400 cursor-move hover:bg-green-200 print:cursor-default print:bg-white print:border-gray-700'
+                                  : showColors && isDruk
+                                  ? 'bg-orange-100 border-orange-300 cursor-move hover:bg-orange-200 print:cursor-default print:bg-white print:border-gray-700'
+                                  : showColors
+                                  ? 'bg-indigo-50 border-indigo-300 cursor-move hover:bg-indigo-100 print:cursor-default print:bg-white print:border-gray-700'
+                                  : 'bg-indigo-50 border-indigo-300 cursor-move hover:bg-indigo-100 print:cursor-default print:bg-white print:border-gray-700'
+                                : showColors
+                                ? 'bg-gray-50 border-gray-200 print:bg-white print:border-gray-400'
+                                : 'bg-gray-50 border-gray-200 print:bg-white print:border-gray-400'
+                            }`}
+                            style={{ flex: isGeblokkeerd ? '0.5' : '1' }}
+                          >
+                            {leerling ? (
+                              <>
+                                <span className="font-medium print:text-base text-gray-800 print:text-black break-word">
+                                  {leerling.naam}
+                                </span>
+                                <span className="text-xs mt-1 print:hidden">
+                                  {showColors && (leerling.geslacht === 'm' ? '♂️' : '♀️')}
+                                  {showColors && isVooraan && ' ⭐'}
+                                  {showColors && isDruk && ' ⚠️'}
+                                </span>
+                              </>
+                            ) : !isGeblokkeerd ? (
+                              <span className="text-gray-400 text-xs md:text-sm print:text-gray-300">
+                                (leeg)
+                              </span>
+                            ) : null}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-4 md:mt-6 text-center text-sm text-gray-600 print:mt-4 print:text-base print:text-black">
+                <p className="font-medium">Bord</p>
+              </div>
+
+              
+            </div>
+
+            <div className="text-center mb-6 space-y-3">
+              <div className="mt-4 bg-blue-50 border border-blue-200 p-3 rounded-2xl inline-block print:hidden">
+                <p className="text-sm text-gray-700">
+                  💡 <strong>Sleep en drop</strong> om leerlingen te verplaatsen
+                </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
                 <button
@@ -523,7 +693,7 @@ export default function Klasindeling() {
                   className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-2xl flex items-center justify-center gap-2 transition"
                 >
                   <Printer className="w-5 h-5" />
-                  Print Klasindeling
+                  Print klasindeling
                 </button>
                 <button
                   onClick={handleDownloadPDF}
@@ -533,79 +703,8 @@ export default function Klasindeling() {
                   Download als PDF
                 </button>
               </div>
-              <div className="bg-blue-50 border border-blue-200 p-3 rounded-2xl inline-block">
-                <p className="text-sm text-gray-700">
-                  💡 <strong>Sleep en drop</strong> om leerlingen te verplaatsen
-                </p>
-              </div>
             </div>
-          )}
-        </div>
-
-        {/* Resultaat - zichtbaar op scherm en bij printen */}
-        {toonResultaat && (
-          <div id="klasindeling-resultaat" className="bg-white rounded-2xl shadow-lg p-4 md:p-8 print:shadow-none print:p-0 print:rounded-none">
-            <h2 className="text-xl md:text-2xl font-bold text-center text-gray-800 mb-4 md:mb-6 print:mb-4 print:text-3xl">
-              Klasindeling - {klasNaam || 'via klasindeling.be'}
-            </h2>
-            
-            <div className="overflow-x-auto">
-              <div className="flex flex-col gap-1 md:gap-2 print:gap-3 min-w-min">
-                {indeling.map((rij, rijIndex) => (
-                  <div key={rijIndex} className="flex gap-1 md:gap-2 print:gap-3">
-                    {rij.map((leerling, kolomIndex) => {
-                      const positieKey = `${rijIndex}-${kolomIndex}`;
-                      const isGeblokkeerd = geblokkeerd.has(positieKey);
-                      const isDruk = leerling?.druk || false;
-                      const isVooraan = leerling?.vooraan || false;
-                      return (
-                        <div
-                          key={`${rijIndex}-${kolomIndex}`}
-                          draggable={!isGeblokkeerd && leerling !== null}
-                          onDragStart={(e) => handleDragStart(e, rijIndex, kolomIndex)}
-                          onDragOver={handleDragOver}
-                          onDrop={(e) => handleDrop(e, rijIndex, kolomIndex)}
-                          className={`border-2 rounded-2xl p-2 md:p-4 text-center min-h-[60px] md:min-h-20 min-w-[60px] md:min-w-0 flex flex-col items-center justify-center transition print:min-h-[70px] print:p-2 print:border text-xs md:text-base ${
-                            isGeblokkeerd
-                              ? 'bg-gray-200 border-gray-300 print:bg-white print:border-gray-300'
-                              : leerling
-                              ? isVooraan
-                                ? 'bg-green-100 border-green-400 cursor-move hover:bg-green-200 print:cursor-default print:bg-white print:border-gray-700'
-                                : isDruk
-                                ? 'bg-orange-100 border-orange-300 cursor-move hover:bg-orange-200 print:cursor-default print:bg-white print:border-gray-700'
-                                : 'bg-indigo-50 border-indigo-300 cursor-move hover:bg-indigo-100 print:cursor-default print:bg-white print:border-gray-700'
-                              : 'bg-gray-50 border-gray-200 print:bg-white print:border-gray-400'
-                          }`}
-                          style={{ flex: isGeblokkeerd ? '0.5' : '1' }}
-                        >
-                          {leerling ? (
-                            <>
-                              <span className="font-medium print:text-base text-gray-800 print:text-black break-word">
-                                {leerling.naam}
-                              </span>
-                              <span className="text-xs mt-1 print:hidden pdf-hidden">
-                                {leerling.geslacht === 'm' ? '♂️' : '♀️'}
-                                {isVooraan && ' ⭐'}
-                                {isDruk && ' ⚠️'}
-                              </span>
-                            </>
-                          ) : !isGeblokkeerd ? (
-                            <span className="text-gray-400 text-xs md:text-sm print:text-gray-300">
-                              (leeg)
-                            </span>
-                          ) : null}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-4 md:mt-6 text-center text-sm text-gray-600 print:mt-4 print:text-base print:text-black">
-              <p className="font-medium">Bord</p>
-            </div>
-          </div>
+          </>
         )}
       </div>
 

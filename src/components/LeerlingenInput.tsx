@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, ChevronDown } from 'lucide-react';
+import { Menu } from '@headlessui/react';
 import { Leerling } from '../utils/klasStorage';
 
 interface LeerlingenInputProps {
@@ -83,7 +84,7 @@ export default function LeerlingenInput({ leerlingen, setLeerlingen }: Leerlinge
           <textarea
             value={bulkTekst}
             onChange={(e) => setBulkTekst(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none"
             rows={6}
             placeholder="Emma de Vries&#10;Luuk Jansen&#10;Sophie Bakker&#10;..."
           />
@@ -105,25 +106,43 @@ export default function LeerlingenInput({ leerlingen, setLeerlingen }: Leerlinge
               value={naam}
               onChange={(e) => setNaam(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none"
               placeholder="Bijv. Emma de Vries"
             />
           </div>
           
           <div className="flex-1 md:flex-initial min-w-[200px] md:min-w-0">
-            <label htmlFor="gender-select" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Geslacht
             </label>
-            <select
-              id="gender-select"
-              value={geslacht}
-              onChange={(e) => setGeslacht(e.target.value as 'm' | 'v')}
-              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-indigo-500"
-              aria-label="Geslacht selecteren"
-            >
-              <option value="m">Jongen</option>
-              <option value="v">Meisje</option>
-            </select>
+            <Menu as="div" className="relative">
+              <Menu.Button className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none flex items-center justify-between bg-white">
+                <span>{geslacht === 'm' ? 'Jongen' : 'Meisje'}</span>
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+              </Menu.Button>
+              <Menu.Items className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg focus:outline-none">
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setGeslacht('m')}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-indigo-100 ${active ? 'bg-indigo-100' : ''}`}
+                    >
+                      Jongen
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setGeslacht('v')}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-indigo-100 ${active ? 'bg-indigo-100' : ''}`}
+                    >
+                      Meisje
+                    </button>
+                  )}
+                </Menu.Item>
+              </Menu.Items>
+            </Menu>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -133,7 +152,7 @@ export default function LeerlingenInput({ leerlingen, setLeerlingen }: Leerlinge
                 id="druk"
                 checked={druk}
                 onChange={(e) => setDruk(e.target.checked)}
-                className="w-4 h-4 rounded focus:ring-indigo-500 accent-indigo-600"
+                className="w-4 h-4 rounded focus:ring-indigo-500 accent-orange-600"
               />
               <label htmlFor="druk" className="text-sm font-medium text-gray-700">
                 Druk
@@ -240,27 +259,45 @@ function BewerkLeerlingForm({ leerling, onOpslaan, onAnnuleer }: BewerkLeerlingF
           type="text"
           value={naam}
           onChange={(e) => setNaam(e.target.value)}
-          className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+          className="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg"
           placeholder="Naam"
           aria-label="Naam van leerling"
         />
-        <label htmlFor="edit-gender-select" className="sr-only">Geslacht selecteren</label>
-        <select
-          id="edit-gender-select"
-          value={geslacht}
-          onChange={(e) => setGeslacht(e.target.value as 'm' | 'v')}
-          className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
-          aria-label="Geslacht selecteren"
-        >
-          <option value="m">Jongen ♂️</option>
-          <option value="v">Meisje ♀️</option>
-        </select>
+        <label className="sr-only">Geslacht selecteren</label>
+        <Menu as="div" className="relative">
+          <Menu.Button className="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none flex items-center justify-between bg-white">
+            <span>{geslacht === 'm' ? 'Jongen ♂️' : 'Meisje ♀️'}</span>
+            <ChevronDown className="w-3 h-3 text-gray-400" />
+          </Menu.Button>
+          <Menu.Items className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg focus:outline-none">
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  onClick={() => setGeslacht('m')}
+                  className={`w-full text-left px-2 py-1 text-sm hover:bg-indigo-100 ${active ? 'bg-indigo-100' : ''}`}
+                >
+                  Jongen ♂️
+                </button>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  onClick={() => setGeslacht('v')}
+                  className={`w-full text-left px-2 py-1 text-sm hover:bg-indigo-100 ${active ? 'bg-indigo-100' : ''}`}
+                >
+                  Meisje ♀️
+                </button>
+              )}
+            </Menu.Item>
+          </Menu.Items>
+        </Menu>
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
             checked={druk}
             onChange={(e) => setDruk(e.target.checked)}
-            className="w-4 h-4 rounded accent-indigo-600"
+            className="w-4 h-4 rounded accent-orange-600"
           />
           Drukke leerling
         </label>

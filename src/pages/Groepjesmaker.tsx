@@ -13,6 +13,7 @@ export default function Groepjesmaker() {
   const [bewerkMode, setBewerkMode] = useState(false);
   const [klasNaam, setKlasNaam] = useState<string>('');
   const [extraTekst, setExtraTekst] = useState<string>('');
+  const [toonKleuren, setToonKleuren] = useState<boolean>(true);
 
   const handleLaadKlas = (klas: OpgeslagenKlas) => {
     setLeerlingen(klas.leerlingen);
@@ -195,72 +196,72 @@ export default function Groepjesmaker() {
     const element = document.getElementById('groepsindeling-resultaat');
     if (!element) return;
 
+    // Add a class to force desktop styles and inject helper CSS for pdf export
+    element.classList.add('pdf-export');
+    const style = document.createElement('style');
+    style.id = 'pdf-export-styles';
+    style.textContent = `
+      .pdf-export .overflow-x-auto { overflow-x: visible !important; }
+      .pdf-export .flex { gap: 0.5rem !important; }
+      .pdf-export [class*="min-h-"] { min-height: 80px !important; min-width: auto !important; padding: 1rem !important; font-size: 1rem !important; line-height: 1.5rem !important; }
+      .pdf-export * { background: white !important; background-image: none !important; color: black !important; border-color: black !important; }
+      .pdf-export .pdf-hidden { display: none !important; }
+    `;
+    document.head.appendChild(style);
+
+    // small delay so styles apply
+    await new Promise((r) => setTimeout(r, 120));
+
     try {
-      // Dynamically import jsPDF only when needed
-      const { jsPDF } = await import('jspdf');
+      // Try dynamic import of html2pdf.js (improves html->pdf fidelity)
+      let html2pdfLib: any;
+      try {
+        const mod = await import('html2pdf.js');
+        html2pdfLib = mod.default || mod;
+      } catch (err) {
+        // If package is not installed, load from CDN as a fallback
+        await new Promise<void>((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'https://unpkg.com/html2pdf.js/dist/html2pdf.bundle.min.js';
+          s.onload = () => resolve();
+          s.onerror = () => reject(new Error('Failed to load html2pdf.js from CDN'));
+          document.head.appendChild(s);
+        });
+        // @ts-ignore
+        html2pdfLib = (window as any).html2pdf;
+      }
 
-      // Add a class to force desktop styles
-      element.classList.add('pdf-export');
-      
-      // Add inline styles to override responsive classes
-      const style = document.createElement('style');
-      style.id = 'pdf-export-styles';
-      style.textContent = `
-        .pdf-export .overflow-x-auto {
-          overflow-x: visible !important;
-        }
-        .pdf-export .flex {
-          gap: 0.5rem !important;
-        }
-        .pdf-export [class*="min-h-"] {
-          min-height: 80px !important;
-          min-width: auto !important;
-          padding: 1rem !important;
-          font-size: 1rem !important;
-          line-height: 1.5rem !important;
-        }
-        .pdf-export * {
-          background: white !important;
-          background-image: none !important;
-          color: black !important;
-          border-color: black !important;
-        }
-        .pdf-export .pdf-hidden {
-          display: none !important;
-        }
-      `;
-      document.head.appendChild(style);
-      
-      // Wait for styles to apply
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-
-      // Use jsPDF html method to directly convert HTML to PDF
-      await pdf.html(element, {
-        callback: function(pdf) {
-          pdf.save('Groepsindeling-Meneer-Janssens.pdf');
+      // Configure options for good visual fidelity
+      const opt = {
+        margin: 10,
+        filename: 'Groepsindeling-Meneer-Janssens.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          allowTaint: false,
+          scrollY: 0
         },
-        x: 0,
-        y: 0,
-        width: 210, // A4 portrait width
-        windowWidth: 1200
-      });
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'] }
+      };
 
-      // Remove temporary styles
+      // html2pdf returns a chainable object; call save() and await promise if available
+      const worker = html2pdfLib().set(opt).from(element);
+      // Some versions return a promise when calling save(); handle both
+      const saved = worker.save();
+      if (saved && typeof saved.then === 'function') {
+        await saved;
+      } else {
+        // If .save() doesn't return a promise, wait a short time for the download to start
+        await new Promise((r) => setTimeout(r, 1000));
+      }
+    } catch (error: any) {
+      console.error('Error generating PDF (html2pdf):', error);
+      alert('Er is een fout opgetreden bij het genereren van de PDF. Controleer de console voor details.');
+    } finally {
+      // Clean up
       element.classList.remove('pdf-export');
-      const tempStyle = document.getElementById('pdf-export-styles');
-      if (tempStyle) tempStyle.remove();
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Er is een fout opgetreden bij het genereren van de PDF.');
-      // Clean up in case of error
-      const element = document.getElementById('groepsindeling-resultaat');
-      if (element) element.classList.remove('pdf-export');
       const tempStyle = document.getElementById('pdf-export-styles');
       if (tempStyle) tempStyle.remove();
     }
@@ -362,7 +363,8 @@ export default function Groepjesmaker() {
                 Groepsindeling ({groepen.length} groepen)
               </h2>
               
-              <div className="grid md:grid-cols-2 gap-4 mb-4">
+
+              <div className="grid md:grid-cols-2 gap-4 md:gap-12 mb-4 items-end">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Klasnaam (optioneel):
@@ -372,63 +374,48 @@ export default function Groepjesmaker() {
                     value={klasNaam}
                     onChange={(e) => setKlasNaam(e.target.value)}
                     placeholder="Bijv: 3A, 5de jaar, ..."
-                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-2xl focus:border-indigo-500 focus:outline-none"
+                    className="w-full max-w-xs px-3 py-2 border-2 border-gray-300 rounded-2xl focus:border-indigo-500 focus:outline-none"
                   />
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Extra tekst (optioneel):
+
+                <div className="flex items-center justify-end gap-4">
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={toonKleuren}
+                      onChange={(e) => setToonKleuren(e.target.checked)}
+                      className="h-5 w-5 accent-indigo-600"
+                    />
+                    Kleuren en emoji's tonen/verbergen
                   </label>
-                  <input
-                    type="text"
-                    value={extraTekst}
-                    onChange={(e) => setExtraTekst(e.target.value)}
-                    placeholder="Bijv: Project groepen, Week 3, ..."
-                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-2xl focus:border-indigo-500 focus:outline-none"
-                  />
+
+                  <div>
+                    <button
+                      onClick={() => setBewerkMode(!bewerkMode)}
+                      className={`px-4 py-2 rounded-2xl transition flex items-center justify-center gap-2 ${
+                        bewerkMode
+                          ? 'bg-green-600 text-white hover:bg-green-700'
+                          : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                      }`}
+                    >
+                      {bewerkMode ? (
+                        <>
+                          <Save className="w-4 h-4" />
+                          Klaar
+                        </>
+                      ) : (
+                        <>
+                          <Edit2 className="w-4 h-4" />
+                          Groepen aanpassen
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end items-center mb-6 flex-wrap gap-3">
-              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                <button
-                  onClick={() => setBewerkMode(!bewerkMode)}
-                  className={`w-full sm:min-w-40 sm:w-auto px-4 py-2 rounded-2xl transition flex items-center justify-center gap-2 ${
-                    bewerkMode
-                      ? 'bg-green-600 text-white hover:bg-green-700'
-                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                  }`}
-                >
-                  {bewerkMode ? (
-                    <>
-                      <Save className="w-4 h-4" />
-                      Klaar
-                    </>
-                  ) : (
-                    <>
-                      <Edit2 className="w-4 h-4" />
-                      Aanpassen
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={handlePrint}
-                  className="w-full sm:min-w-40 sm:w-auto px-4 py-2 bg-green-600 text-white rounded-2xl hover:bg-green-700 transition flex items-center justify-center gap-2"
-                >
-                  <Printer className="w-4 h-4" />
-                  Print
-                </button>
-                <button
-                  onClick={handleDownloadPDF}
-                  className="w-full sm:min-w-40 sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition flex items-center justify-center gap-2"
-                >
-                  <Download className="w-4 h-4" />
-                  Download PDF
-                </button>
-              </div>
-            </div>
+            
 
             {bewerkMode && (
               <div className="mb-4 p-4 bg-blue-50 rounded-2xl">
@@ -461,7 +448,7 @@ export default function Groepjesmaker() {
                   key={groepIdx}
                   className="border-2 border-gray-200 rounded-2xl p-4 bg-linear-to-br from-white to-gray-50"
                 >
-                  <h3 className="font-bold text-lg text-indigo-600 mb-3">
+                  <h3 className={`font-bold text-lg ${toonKleuren ? 'text-indigo-600' : 'text-gray-800'} mb-3`}>
                     Groep {groepIdx + 1} ({groep.length})
                   </h3>
                   <div className="space-y-2">
@@ -473,11 +460,29 @@ export default function Groepjesmaker() {
                         onVerplaats={(naarGroep) => verplaatsLeerling(groepIdx, naarGroep, leerlingIdx)}
                         groepen={groepen}
                         huidigeGroep={groepIdx}
+                        toonKleuren={toonKleuren}
                       />
                     ))}
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center sm:justify-end mt-6 gap-3 px-6 w-full">
+              <button
+                onClick={handlePrint}
+                className="w-full sm:w-auto pdf-hidden print:hidden px-4 py-2 bg-green-600 text-white rounded-2xl hover:bg-green-700 transition flex items-center justify-center gap-2"
+              >
+                <Printer className="w-4 h-4" />
+                Print groepen
+              </button>
+              <button
+                onClick={handleDownloadPDF}
+                className="w-full sm:w-auto pdf-hidden print:hidden px-4 py-2 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition flex items-center justify-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Download PDF
+              </button>
             </div>
             </div>
           </div>
@@ -521,16 +526,17 @@ interface LeerlingKaartProps {
   onVerplaats: (naarGroep: number) => void;
   groepen: Leerling[][];
   huidigeGroep: number;
+  toonKleuren: boolean;
 }
 
-function LeerlingKaart({ leerling, bewerkMode, onVerplaats, groepen, huidigeGroep }: LeerlingKaartProps) {
+function LeerlingKaart({ leerling, bewerkMode, onVerplaats, groepen, huidigeGroep, toonKleuren }: LeerlingKaartProps) {
   const [toonVerplaats, setToonVerplaats] = useState(false);
 
   return (
     <div className="relative">
       <div
         className={`px-3 py-2 rounded-2xl ${
-          leerling.druk
+          toonKleuren && leerling.druk
             ? 'bg-orange-100 border-2 border-orange-300'
             : 'bg-white border-2 border-gray-200'
         } ${bewerkMode ? 'cursor-pointer hover:shadow-md transition' : ''}`}
@@ -539,11 +545,13 @@ function LeerlingKaart({ leerling, bewerkMode, onVerplaats, groepen, huidigeGroe
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">
             {leerling.naam}
-            <span className="ml-1 pdf-hidden">
-              {leerling.geslacht === 'm' ? '♂️' : leerling.geslacht === 'v' ? '♀️' : '⚧️'}
-            </span>
+            {toonKleuren && (
+              <span className="ml-1 pdf-hidden">
+                {leerling.geslacht === 'm' ? '♂️' : leerling.geslacht === 'v' ? '♀️' : '⚧️'}
+              </span>
+            )}
           </span>
-          {leerling.druk && (
+          {leerling.druk && toonKleuren && (
             <span className="text-xs bg-orange-200 px-2 py-1 rounded pdf-hidden">⚠️</span>
           )}
         </div>

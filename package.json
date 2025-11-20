@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.9",
     "firebase": "^12.6.0",
+    "html2canvas": "^1.4.1",
+    "html2pdf.js": "^0.12.1",
     "jspdf": "^3.0.3",
     "lucide-react": "^0.554.0",
     "qrcode.react": "^4.2.0",

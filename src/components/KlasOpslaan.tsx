@@ -1,6 +1,7 @@
-import { Save, FolderOpen, Trash2 } from 'lucide-react';
+import { Save, FolderOpen, Trash2, ChevronDown } from 'lucide-react';
 import { OpgeslagenKlas, loadKlassen, addKlas, deleteKlas, Leerling } from '../utils/klasStorage';
 import { useState, useEffect } from 'react';
+import { Menu } from '@headlessui/react';
 
 interface KlasOpslagenProps {
   leerlingen: Leerling[];
@@ -71,31 +72,46 @@ export default function KlasOpslaan({ leerlingen, onLaadKlas, indeling, rijen, k
             Laad een klas:
           </label>
           <div className="flex flex-col sm:flex-row gap-2">
-            <select
-              id="klas-select"
-              value={geselecteerdeKlas}
-              onChange={(e) => {
-                setGeselecteerdeKlas(e.target.value);
-                if (e.target.value) {
-                  laadKlas(e.target.value);
-                } else {
-                  onReset?.();
-                }
-              }}
-              className="w-full sm:flex-1 px-4 py-2 border-2 border-gray-300 rounded-2xl focus:border-indigo-500 focus:outline-none text-sm"
-              aria-label="Selecteer een klas om te laden"
-            >
-              <option value="">-- Selecteer een klas --</option>
-              {opgeslagenKlassen.map(klas => (
-                <option key={klas.id} value={klas.id}>
-                  {klas.naam} ({klas.leerlingen.length} leerlingen)
-                </option>
-              ))}
-            </select>
+            <Menu as="div" className="relative w-full sm:flex-1">
+              <Menu.Button className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none text-sm text-left flex items-center justify-between">
+                {geselecteerdeKlas ? `${opgeslagenKlassen.find(k => k.id === geselecteerdeKlas)?.naam} (${opgeslagenKlassen.find(k => k.id === geselecteerdeKlas)?.leerlingen.length} leerlingen)` : '-- Selecteer een klas --'}
+                <ChevronDown className="w-4 h-4" />
+              </Menu.Button>
+              <Menu.Items className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
+                <Menu.Item>
+                  {() => (
+                    <button
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-indigo-100 hover:text-indigo-900 cursor-pointer"
+                      onClick={() => {
+                        setGeselecteerdeKlas('');
+                        onReset?.();
+                      }}
+                    >
+                      -- Selecteer een klas --
+                    </button>
+                  )}
+                </Menu.Item>
+                {opgeslagenKlassen.map(klas => (
+                  <Menu.Item key={klas.id}>
+                    {() => (
+                      <button
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-indigo-100 hover:text-indigo-900 cursor-pointer"
+                        onClick={() => {
+                          setGeselecteerdeKlas(klas.id);
+                          laadKlas(klas.id);
+                        }}
+                      >
+                        {klas.naam} ({klas.leerlingen.length} leerlingen)
+                      </button>
+                    )}
+                  </Menu.Item>
+                ))}
+              </Menu.Items>
+            </Menu>
             {geselecteerdeKlas && (
               <button
                 onClick={() => verwijderKlas(geselecteerdeKlas)}
-                className="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-2xl flex items-center justify-center gap-2 transition"
+                className="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center justify-center gap-2 transition"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -114,11 +130,11 @@ export default function KlasOpslaan({ leerlingen, onLaadKlas, indeling, rijen, k
               value={opslaanNaam}
               onChange={(e) => setOpslaanNaam(e.target.value)}
               placeholder="Bijv: 3A, 4B, ..."
-              className="w-full sm:flex-1 px-4 py-2 border-2 border-gray-300 rounded-2xl focus:border-indigo-500 focus:outline-none text-sm"
+              className="w-full sm:flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none text-sm"
             />
             <button
               onClick={opslaanKlas}
-              className="w-full sm:w-auto px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-2xl flex items-center justify-center gap-2 transition whitespace-nowrap"
+              className="w-full sm:w-auto px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center justify-center gap-2 transition whitespace-nowrap"
             >
               <Save className="w-4 h-4" />
               Opslaan
