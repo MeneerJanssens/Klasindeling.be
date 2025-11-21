@@ -1,6 +1,5 @@
 import { useState } from 'react';
-// @ts-ignore
-import html2pdf from 'html2pdf.js';
+
 import { Users, RefreshCw, Edit2, Save, Printer, Download } from 'lucide-react';
 import { Leerling, OpgeslagenKlas } from '../utils/klasStorage';
 import LeerlingenInput from '../components/LeerlingenInput';
@@ -192,7 +191,7 @@ export default function Groepjesmaker() {
     setTimeout(() => {
       printWindow.print();
     }, 250);
-  };
+  }
 
   const handleDownloadPDF = async () => {
     const element = document.getElementById('groepsindeling-resultaat');
@@ -286,6 +285,17 @@ export default function Groepjesmaker() {
     };
 
     try {
+      // Load html2pdf script dynamically if not already loaded
+      if (!(window as any).html2pdf) {
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = '/js/html2pdf.bundle.min.js';
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error('Failed to load html2pdf script'));
+          document.body.appendChild(script);
+        });
+      }
+
       // 1. Create a container for the clone that is off-screen but technically "visible"
       const container = document.createElement('div');
       container.style.position = 'fixed';
@@ -347,7 +357,7 @@ export default function Groepjesmaker() {
       await new Promise<void>((resolve, reject) => {
         try {
           // @ts-ignore
-          const worker = html2pdf().set(opt).from(clone).save();
+          const worker = (window as any).html2pdf().set(opt).from(clone).save();
           if (worker && typeof worker.then === 'function') {
             worker.then(() => resolve()).catch((err: any) => reject(err));
           } else {
@@ -384,6 +394,7 @@ export default function Groepjesmaker() {
   };
 
   return (
+
     <div className="min-h-screen bg-linear-to-br from-indigo-100 via-purple-50 to-blue-100 p-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8 text-center">
