@@ -487,12 +487,13 @@ export default function Groepjesmaker() {
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                Groepsindeling ({groepen.length} groepen)
+                Groepsindeling <span className="whitespace-nowrap">({groepen.length} groepen)</span>
               </h2>
 
 
-              <div className="grid md:grid-cols-2 gap-4 md:gap-12 mb-4 items-end">
-                <div>
+              <div className="mb-4 flex flex-col md:flex-row items-center md:items-end md:justify-between gap-4">
+                {/* Left: input - aligned left on desktop */}
+                <div className="w-full md:w-auto flex flex-col items-start">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Klasnaam (optioneel):
                   </label>
@@ -501,43 +502,46 @@ export default function Groepjesmaker() {
                     value={klasNaam}
                     onChange={(e) => setKlasNaam(e.target.value)}
                     placeholder="Bijv: 3A, 5de jaar, ..."
-                    className="w-full max-w-xs px-3 py-2 border-2 border-gray-300 rounded-2xl focus:border-indigo-500 focus:outline-none"
+                    className="w-full md:w-auto px-3 py-2 border-2 border-gray-300 rounded-2xl focus:border-indigo-500 focus:outline-none"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-4">
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={toonKleuren}
-                      onChange={(e) => setToonKleuren(e.target.checked)}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                    <span className="ml-3 text-sm font-medium text-gray-700">Kleuren en emoji's tonen/verbergen</span>
-                  </label>
-
-                  <div>
-                    <button
-                      onClick={() => setBewerkMode(!bewerkMode)}
-                      className={`px-4 py-2 rounded-2xl transition flex items-center justify-center gap-2 ${bewerkMode
-                        ? 'bg-green-600 text-white hover:bg-green-700'
-                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                        }`}
-                    >
-                      {bewerkMode ? (
-                        <>
-                          <Save className="w-4 h-4" />
-                          Klaar
-                        </>
-                      ) : (
-                        <>
-                          <Edit2 className="w-4 h-4" />
-                          Groepen aanpassen
-                        </>
-                      )}
-                    </button>
+                {/* Center: toggle - centered on desktop */}
+                <div className="w-full md:w-auto flex justify-center md:flex-1">
+                  <div className="flex items-center gap-3">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={toonKleuren}
+                        onChange={(e) => setToonKleuren(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full relative peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
+                    </label>
+                    <span className="text-sm font-medium text-gray-700">Kleuren en emoji's tonen/verbergen</span>
                   </div>
+                </div>
+
+                {/* Right: button - aligned right on desktop */}
+                <div className="w-full md:w-auto flex justify-end">
+                  <button
+                    onClick={() => setBewerkMode(!bewerkMode)}
+                    className={`w-full md:w-auto px-4 py-3 rounded-2xl transition flex items-center justify-center gap-2 ${bewerkMode
+                      ? 'bg-green-600 text-white hover:bg-green-700'
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                      }`}>
+                    {bewerkMode ? (
+                      <>
+                        <Save className="w-4 h-4" />
+                        Klaar
+                      </>
+                    ) : (
+                      <>
+                        <Edit2 className="w-4 h-4" />
+                        Groepen aanpassen
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
